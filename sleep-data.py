@@ -3,6 +3,7 @@ from garminconnect import Garmin
 from notion_client import Client
 from dotenv import load_dotenv, dotenv_values
 import pytz
+import os
 
 # Constants
 local_tz = pytz.timezone("America/Chicago")
@@ -78,9 +79,17 @@ def create_sleep_data(client, database_id, sleep_data, skip_zero_sleep=True):
     print(f"Created sleep entry for: {sleep_date}")
 
 def main():
-    garmin = Garmin(CONFIG["GARMIN_EMAIL"], CONFIG["GARMIN_PASSWORD"])
-    notion_client = Client(auth=CONFIG["NOTION_TOKEN"])
-    database_id = CONFIG["NOTION_SLEEP_DB_ID"]
+    load_dotenv()
+
+    # Initialize Garmin and Notion clients using environment variables
+    garmin_email = os.getenv("GARMIN_EMAIL")
+    garmin_password = os.getenv("GARMIN_PASSWORD")
+    garmin = Garmin(garmin_email, garmin_password)
+
+    notion_token = os.getenv("NOTION_TOKEN")
+    database_id = os.getenv("NOTION_SLEEP_DB_ID")
+    
+    notion_client = Client(auth=notion_token)
 
     try:
         garmin.login()
