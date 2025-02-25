@@ -84,10 +84,12 @@ def main():
     # Initialize Garmin and Notion clients using environment variables
     garmin_email = os.getenv("GARMIN_EMAIL")
     garmin_password = os.getenv("GARMIN_PASSWORD")
-    
     garmin = Garmin(garmin_email, garmin_password)
-    notion_client = Client(auth=CONFIG["NOTION_TOKEN"])
-    database_id = CONFIG["NOTION_SLEEP_DB_ID"]
+
+    notion_token = os.getenv("NOTION_TOKEN")
+    database_id = os.getenv("NOTION_SLEEP_DB_ID")
+    
+    notion_client = Client(auth=notion_token)
 
     try:
         garmin.login()
