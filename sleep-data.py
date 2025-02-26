@@ -53,6 +53,7 @@ def create_sleep_data(client, database_id, sleep_data, skip_zero_sleep=True):
         (daily_sleep.get(k, 0) or 0) for k in ['deepSleepSeconds', 'lightSleepSeconds', 'remSleepSeconds']
     )
     
+    
     if skip_zero_sleep and total_sleep == 0:
         print(f"Skipping sleep data for {sleep_date} as total sleep is 0")
         return
@@ -84,24 +85,19 @@ def main():
     # Initialize Garmin and Notion clients using environment variables
     garmin_email = os.getenv("GARMIN_EMAIL")
     garmin_password = os.getenv("GARMIN_PASSWORD")
-    garmin = Garmin(garmin_email, garmin_password)
-
     notion_token = os.getenv("NOTION_TOKEN")
     database_id = os.getenv("NOTION_SLEEP_DB_ID")
-    
-    notion_client = Client(auth=notion_token)
 
-    try:
-        garmin.login()
-    except Exception as e:
-        print("Failed to log in to Garmin:", e)
-        return
+    # Initialize Garmin client and login
+    garmin = Garmin(garmin_email, garmin_password)
+    garmin.login()
+    client = Client(auth=notion_token)
 
     data = get_sleep_data(garmin)
     if data:
         sleep_date = data.get('dailySleepDTO', {}).get('calendarDate')
-        if sleep_date and not sleep_data_exists(notion_client, database_id, sleep_date):
-            create_sleep_data(notion_client, database_id, data, skip_zero_sleep=True)
+        if sleep_date and not sleep_data_exists(client, database_id, sleep_date):
+            create_sleep_data(client, database_id, data, skip_zero_sleep=True)
 
 if __name__ == '__main__':
     main()
