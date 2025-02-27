@@ -2,11 +2,9 @@ name: Sync Garmin to Notion
 
 on:
   schedule:
-    # This cron job will run every 15 minutes from 6 AM to 11 PM Eastern Time
-    # - cron: '*/10 10-23 * * *'  # Every 15 minutes from 10:00 to 23:45 UTC 
-    # - cron: '*/10 0-3 * * *'    # Every 15 minutes from 00:00 to 03:45 UTC
-    # - cron: '0 1 * * *' # Daily
-    - cron: '0 */6 * * *' # Every 6 hours
+    # - cron: '0 1 * * *' # Daily at 1 am
+    # - cron: '0 */6 * * *' # Every 6 hours
+    - cron: '0 0,6,8,12,18,22 * * *'
   workflow_dispatch:
 env:
   TZ: 'America/Chicago'
