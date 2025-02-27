@@ -39,12 +39,14 @@ def steps_need_update(existing_steps, new_steps):
     Compare existing steps data with imported data to determine if an update is needed.
     """
     existing_props = existing_steps['properties']
+    activity_type = "Walking"
     total_distance_miles = round((new_steps.get('totalDistance', 0) / 1000) * KM_TO_MILES, 2)
     
     return (
         existing_props['Total Steps']['number'] != new_steps.get('totalSteps') or
         existing_props['Step Goal']['number'] != new_steps.get('stepGoal') or
-        existing_props['Total Distance (mi)']['number'] != total_distance_miles
+        existing_props['Total Distance (mi)']['number'] != total_distance_miles or
+        existing_props['Activity Type']['title'] != activity_type
     )
 
 def update_daily_steps(client, existing_steps, new_steps):
