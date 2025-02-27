@@ -100,7 +100,7 @@ def main():
     client = Client(auth=notion_token)
 
     # Define the date range
-    start_date = datetime.today().date() - timedelta(days=7)  # Example: Last 7 days
+    start_date = datetime.today().date() - timedelta(days=42)  # Example: Last 7 days
     end_date = datetime.today().date()
 
     sleep_data_list = get_sleep_data(garmin, start_date, end_date)
