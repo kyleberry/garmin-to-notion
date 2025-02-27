@@ -40,7 +40,7 @@ def format_time_readable(timestamp):
     )
 
 def format_date_for_name(sleep_date):
-    return datetime.strptime(sleep_date, "%Y-%m-%d").strftime("%d.%m.%Y") if sleep_date else "Unknown"
+    return datetime.strptime(sleep_date, "%Y-%m-%d").strftime("%m/%d/%Y") if sleep_date else "Unknown"
 
 def sleep_data_exists(client, database_id, sleep_date):
     query = client.databases.query(
