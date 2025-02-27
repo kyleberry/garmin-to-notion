@@ -4,13 +4,15 @@ from notion_client import Client
 from dotenv import load_dotenv
 import os
 
+KM_TO_MILES = 0.621371  # Conversion factor
+
 def get_all_daily_steps(garmin):
     """
     Get last x days of daily step count data from Garmin Connect.
     """
     startdate = date.today() - timedelta(days=1)
     daterange = [startdate + timedelta(days=x) 
-                 for x in range((date.today() - startdate).days)] # excl. today
+                 for x in range((date.today() - startdate).days)]  # Excluding today
     daily_steps = []
     for d in daterange:
         daily_steps += garmin.get_daily_steps(d.isoformat(), d.isoformat())
@@ -37,27 +39,25 @@ def steps_need_update(existing_steps, new_steps):
     Compare existing steps data with imported data to determine if an update is needed.
     """
     existing_props = existing_steps['properties']
-    activity_type = "Walking"
+    total_distance_miles = round((new_steps.get('totalDistance', 0) / 1000) * KM_TO_MILES, 2)
     
     return (
         existing_props['Total Steps']['number'] != new_steps.get('totalSteps') or
         existing_props['Step Goal']['number'] != new_steps.get('stepGoal') or
-        existing_props['Total Distance (km)']['number'] != new_steps.get('totalDistance') or
-        existing_props['Activity Type']['title'] != activity_type
+        existing_props['Total Distance (mi)']['number'] != total_distance_miles
     )
 
 def update_daily_steps(client, existing_steps, new_steps):
     """
     Update an existing daily steps entry in the Notion database with new data.
     """
-    total_distance = new_steps.get('totalDistance')
-    if total_distance is None:
-        total_distance = 0
+    total_distance_miles = round((new_steps.get('totalDistance', 0) / 1000) * KM_TO_MILES, 2)
+    
     properties = {
-        "Activity Type":  {"title": [{"text": {"content": "Walking"}}]},
+        "Activity Type": {"title": [{"text": {"content": "Walking"}}]},
         "Total Steps": {"number": new_steps.get('totalSteps')},
         "Step Goal": {"number": new_steps.get('stepGoal')},
-        "Total Distance (km)": {"number": round(total_distance / 1000, 2)}
+        "Total Distance (mi)": {"number": total_distance_miles}
     }
     
     update = {
@@ -71,15 +71,14 @@ def create_daily_steps(client, database_id, steps):
     """
     Create a new daily steps entry in the Notion database.
     """
-    total_distance = steps.get('totalDistance')
-    if total_distance is None:
-        total_distance = 0
+    total_distance_miles = round((steps.get('totalDistance', 0) / 1000) * KM_TO_MILES, 2)
+    
     properties = {
         "Activity Type": {"title": [{"text": {"content": "Walking"}}]},
         "Date": {"date": {"start": steps.get('calendarDate')}},
         "Total Steps": {"number": steps.get('totalSteps')},
         "Step Goal": {"number": steps.get('stepGoal')},
-        "Total Distance (km)": {"number": round(total_distance / 1000, 2)}
+        "Total Distance (mi)": {"number": total_distance_miles}
     }
     
     page = {
