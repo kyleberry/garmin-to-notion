@@ -4,7 +4,7 @@ on:
   schedule:
     # - cron: '0 1 * * *' # Daily at 1 am
     # - cron: '0 */6 * * *' # Every 6 hours
-    - cron: '0 0,6,8,12,18,22 * * *'
+    - cron: '0 0,4,6,12,14,18 * * *'
   workflow_dispatch:
 env:
   TZ: 'America/Chicago'
